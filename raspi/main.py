@@ -58,10 +58,10 @@ upper_darkred_hsv = np.array([80, 255, 255])#[30,255,255]
 lower_lightred_hsv = np.array([160, 100, 50])
 upper_lightred_hsv = np.array([250, 255, 255])
 
-lower_red_hsv = np.array([80, 40, 100])#[160, 40, 100]
+lower_red_hsv = np.array([110, 60, 50])#[160, 40, 100]
 upper_red_hsv = np.array([180, 255, 255])
 lower_red_area = 7000
-upper_red_area = 10000
+upper_red_area = 12000
 
 #青ボール用HSV値
 lower_blue_hsv = np.array([80, 60, 20])
@@ -115,12 +115,12 @@ collect_two = False
 first_obj ='None'
 two_collection_mode = True
 
-#モータピンの宣言（グローバル）
+MOTOR_PIN = 4
 
 # モータを回す関数
 def run_motor():
     GPIO.output(MOTOR_PIN, GPIO.LOW)  # PNPならLOWでON
-    time.sleep(600)
+    time.sleep(60000)
     GPIO.output(MOTOR_PIN, GPIO.HIGH) # OFF
 
 def redball_detection():
@@ -146,27 +146,36 @@ def redball_detection():
 
     image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     #back_image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    #cv2.imshow("redball_image1", image_hsv)
 
     # 背景差分処理
     fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
+  
     fgmask_redball = fgbg.apply(back_image)
+    #cv2.imshow("redball_image2", fgmask_redball)
     fgmask_redball = fgbg.apply(image)
+    #cv2.imshow("redball_image3", fgmask_redball)
 
     and_mask_redball = cv2.bitwise_and(image, image, mask = fgmask_redball)
+    #cv2.imshow("redball_image4", and_mask_redball)
     and_mask_redball = cv2.cvtColor(and_mask_redball, cv2.COLOR_BGR2HSV)
+    #cv2.imshow("redball_image5", and_mask_redball)
     # 指定した色のマスク画像の生成
     #range_mask_darkred = cv2.inRange(and_mask_redball, lower_darkred_hsv, upper_darkred_hsv)
     #range_mask_lightred = cv2.inRange(and_mask_redball, lower_lightred_hsv, upper_lightred_hsv)
 
     range_mask_redball = cv2.inRange(and_mask_redball, lower_red_hsv, upper_red_hsv)
+    #cv2.imshow("redball_image6",  range_mask_redball)
     #range_mask_redball = cv2.bitwise_or(range_mask_darkred, range_mask_lightred)
     cnt1,cnt2,cnt3 = cv2.findContours(range_mask_redball, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     for c in cnt2:
         ((x, y), radius) = cv2.minEnclosingCircle(c)
 
+        print(radius)
         if(radius > 40 and radius < 80):
             c_area.append(c)
+            
             area.append(cv2.contourArea(c))
 
     if len(area) == 0:
@@ -187,13 +196,13 @@ def redball_detection():
 
     #DEBUG:
     di.add_contour_line(c_para, (128, 0, 255), 5)
-    #di.show()
+    di.show()
 
     #print(area)
     print(max_area)
     #cv2.imshow("redball_image", back_image_hsv)
     #cv2.imwrite("image.jpg", image_hsv)
-    #cv2.imwrite("red_ball.jpg", range_mask_redball)
+    cv2.imwrite("red_ball.jpg", range_mask_redball)
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
     #rawCapture.truncate(0)
@@ -241,7 +250,7 @@ def blueball_detection():
     if len(area) == 0:
         area.append(0)
 
-    print("blueball_area"+str(area))
+    #print("blueball_area"+str(area))
     for i in area:
         count += 1
         if i > lower_blue_area and i < upper_blue_area:
@@ -256,7 +265,7 @@ def blueball_detection():
 
     #DEBUG:
     di.add_contour_line(c_para, (128, 0, 255), 5)
-    #di.show()
+    di.show()
 
     #print(area)
 
@@ -568,7 +577,7 @@ def calaculate_distance( c_para, max_area, shape ):
                 real_angle = 0
                 ENABLE_COMAR = "ban"
 
-        #赤・青ボールかボールピラミッドの処理
+        #赤ボールかボールピラミッドの処理
         else:
             ((x, y), radius) = cv2.minEnclosingCircle(c_para)
             #front_image_copy = front_image
@@ -773,10 +782,10 @@ def compar_distance_and_send2RX(data1, data2, data3, data4, data5):
                 if is_ball or is_can:
                     go_to_goal = False  # ゴールに行かずに2つ目を探す
                     collect_two = True
-                #else:
+                else:
                     # それ以外（ピラミッドなど）はそのままゴールへ
-                    # go_to_goal = True
-                    # collect_two = False
+                    go_to_goal = True
+                    collect_two = False
             
             # 2つ目の回収判定
             elif collect_two:
@@ -1000,7 +1009,7 @@ def main():
 				
 				
                 # add:250509
-                MOTOR_PIN = 4
+                
                 GPIO.setmode(GPIO.BCM)
                 GPIO.setup(MOTOR_PIN, GPIO.OUT)
 				
