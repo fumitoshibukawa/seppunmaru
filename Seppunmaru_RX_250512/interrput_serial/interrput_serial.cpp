@@ -89,6 +89,9 @@ volatile long int  time_count  = 0;
 void Slave();
 void Collect();
 
+// サーチの回数
+int step = 0;
+
 // シリアル通信の受信用
 int16_t charget();
 
@@ -1100,11 +1103,11 @@ void Go2Pet( void )
 	sleep( 500 );
 	ARM_MIDDLE;
 
-	sleep( 500 );
+	//sleep( 500 );
 	//ARM_PUT;
 
 
-	sleep( 400 );
+	//sleep( 400 );
 }
 
 // -----------------------------------------------------------
@@ -1221,21 +1224,23 @@ void Collect(void)
  
 		// 追加：ゴールフラグに基づいて次の動作を決定
 		} else if (goal_flag == 1) {
-			if (obj2.type != RedBall && obj2.type != BlueBall && obj2.type != Zeitaku){
-    		//何もないとき or 認識不可
-    		//最後以外は、前方に少し進める
-   		 	translate(offset_search);
-   			 continue;
+			if (obj2.type != RedBall && obj2.type != BlueBall && obj2.type != Zeitaku && obj2.type != Goal){
+    			//何もないとき or 認識不可
+    			//最後以外は、前方に少し進める
+   		 		translate(offset_search);
+   				continue;
 			}
 			//見つけた位置から回収する
 			switch(obj2.type){
 		    	case RedBall:
 		    	case BlueBall:
-		     	   catch_ball(obj2.distance, obj2.angle);
-		      	  break;
+		     		catch_ball(obj2.distance, obj2.angle);
+		      		break;
 		    	case Zeitaku:
-		      	  catch_zeitaku(obj2.distance, obj2.angle);
-		     	   break;
+		      		catch_zeitaku(obj2.distance, obj2.angle);
+		     		break;
+				case Goal:
+					break;
 			}
 		    // ゴールに向かう処理
 		    //ライントレース出来るところまで移動
@@ -1331,49 +1336,32 @@ void Collect(void)
  
 		// 追加：ゴールフラグに基づいて次の動作を決定
 		} else if (goal_flag == 1) {
-			if (obj2.type != RedBall && obj2.type != BlueBall && obj2.type != Zeitaku){
-    		//何もないとき or 認識不可
-    		//最後以外は、前方に少し進める
-   		 	translate(offset_search);
-   			 continue;
+			if (obj2.type != RedBall && obj2.type != BlueBall && obj2.type != Zeitaku&& obj2.type != Goal){
+    			//何もないとき or 認識不可
+    			//最後以外は、前方に少し進める
+   		 		translate(offset_search);
+   				continue;
 			}
 			//見つけた位置から回収する
 			switch(obj2.type){
 		    	case RedBall:
 		    	case BlueBall:
-		     	   catch_ball(obj2.distance, obj2.angle);
-		      	  break;
+		     		catch_ball(obj2.distance, obj2.angle);
+		      		break;
 		    	case Zeitaku:
-		      	  catch_zeitaku(obj2.distance, obj2.angle);
-		     	   break;
+		      		catch_zeitaku(obj2.distance, obj2.angle);
+		     		break;
+				case Goal:
+					break;
 			}
 		    // ゴールに向かう処理
 		    //ライントレース出来るところまで移動
-			
 		    translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS); // -1.0f削除
 		    rotate(-90.0f);
 			translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
 		    //ライントレースで一本目のところまで行く
 		    return_to_line();
 			
-/*			switch(obj2.type){
-				case RedBall:
-				case BlueBall:
-				case Goal:
-					//ライントレース出来るところまで移動
-					translate( offset_search * step + ADJUSTMENT_SEARCH_START_POS); // -1.0fを削除, + 4.0fを追加
-					rotate(90.0f);
-					translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
-					return_to_line();
-					break;
-				case Zeitaku:
-					//ライントレース出来るところまで移動
-					translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS); // -1.0fを削除, + 4.0fを追加
-					rotate(-90.0f);
-					translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
-					return_to_line();
-					break;
-		    }*/
 		}
 		//排出して元に戻る
 		switch(obj1.type){
@@ -1396,11 +1384,34 @@ void Collect(void)
 		goal_flag = 0;
 		step -= 1;
 	}
+	// 2個目探索中にfor文を抜けた場合，排出してからペットボトルに向かう
+	if (goal_flag == 1 && step == max_search_front){
+		// ゴールに向かう処理
+		//ライントレース出来るところまで移動
+		translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS); // -1.0f削除
+	    rotate(-90.0f);
+		translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
+	    //ライントレースで一本目のところまで行く
+	    return_to_line();
+		//排出して元に戻る
+		switch(obj1.type){
+			case RedBall:
+				emit_redball(obj2);
+				break;
+			case BlueBall:
+				emit_blueball(obj2);
+				break;
+			case Zeitaku:
+				emit_zeitaku(obj2);
+				break;
+		}
+	}
 
 
 	//////////////////////////////
 	///ペットボトルの回収処理  ///
 	//////////////////////////////
+	/*
 	//左前探索域の最奥から少し後退しラインがある方へ向く
 	translate(-20.0f);
 	rotate(-90.0f);
@@ -1414,6 +1425,8 @@ void Collect(void)
 	}
 	translate(5.0f);
 	rotate(90.0f);
+	*/
+	Line_Trace( 1 );
 	//ペットボトル回収動作
 	Go2Pet();
 	//ライントレースなしVer
@@ -1922,11 +1935,20 @@ void main(void)
 		// --- 黒スイッチ ---
 		// ------------------
 		if( black == 0 ){
-			transform_robot();
-
 			rprintln("Pressed Black-switch");
-			rotate(360.0f);
-			sleep( 1000 );
+			
+			ARM_MIDDLE;
+
+			sleep( 300 );
+			while (1){
+				
+				search_oneball_or_zeitaku();
+				sleep( 500 );
+				
+			}
+			
+			//rotate(360.0f);
+			//sleep( 1000 );
 			//rotate(-90.0f);
 			/*
 			sleep( 1500 );
@@ -2637,8 +2659,7 @@ void emit_zeitaku(Object obj2){
 		rotate(90.0f);			
 		translate(10.0f);
 		Line_Trace( 2 );		
-		}
-	else if(obj2.type == BlueBall){
+	}else if(obj2.type == BlueBall){
 		rotate(-90.0f);
 		translate(10.0f);
 		Line_Trace( 1 );
@@ -2648,6 +2669,10 @@ void emit_zeitaku(Object obj2){
 		//戻る
 		translate(42.0f);
 		Line_Trace( 1 );	
+	}else{
+		rotate(-90.0f);
+		translate(10.0f);
+		Line_Trace( 1 );
 	}
 }
 
