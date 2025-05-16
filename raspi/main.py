@@ -115,6 +115,7 @@ collect_two = False
 first_obj ='None'
 two_collection_mode = True
 
+#モータピンの宣言（グローバル）
 
 # モータを回す関数
 def run_motor():
