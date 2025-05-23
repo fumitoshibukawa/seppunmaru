@@ -172,7 +172,7 @@ def redball_detection():
     for c in cnt2:
         ((x, y), radius) = cv2.minEnclosingCircle(c)
 
-        print(radius)
+        #print(radius)
         if(radius > 40 and radius < 80):
             c_area.append(c)
             
@@ -196,7 +196,7 @@ def redball_detection():
 
     #DEBUG:
     di.add_contour_line(c_para, (128, 0, 255), 5)
-    di.show()
+    #di.show()
 
     #print(area)
     print(max_area)
@@ -265,7 +265,7 @@ def blueball_detection():
 
     #DEBUG:
     di.add_contour_line(c_para, (128, 0, 255), 5)
-    di.show()
+    #di.show()
 
     #print(area)
 
@@ -308,7 +308,7 @@ def cun_detection():
 
 
     image_blur = cv2.medianBlur(image, 3)
-
+    #cv2.imshow("image_blur", image_blur)
     # 背景差分処理
     fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
     fgmask = fgbg.apply(back_image)
@@ -316,7 +316,8 @@ def cun_detection():
     fgmask_and = cv2.bitwise_and(image, image, mask = fgmask)
 
     fgmask_image_hsv = cv2.cvtColor(fgmask_and, cv2.COLOR_BGR2HSV)
-
+    #cv2.imshow("fgmask_image_hsv", fgmask_image_hsv)
+    
     # 赤ボール用閾値処理
     range_mask_red = cv2.inRange(fgmask_image_hsv, lower_red_hsv, upper_red_hsv)
     dilate_mask_red = cv2.dilate(range_mask_red, kernel_2, iterations = 1)
@@ -326,10 +327,12 @@ def cun_detection():
 
     dilate_mask_and = cv2.bitwise_or(dilate_mask_red, dilate_mask_blue)
     image_impaint = cv2.inpaint(image_blur, dilate_mask_and, 10, cv2.INPAINT_NS)
-
+    #cv2.imshow("image_impaint",image_impaint)
     impaint_blur = cv2.medianBlur(image_impaint, 3)
     image_gray = cv2.cvtColor(impaint_blur, cv2.COLOR_BGR2GRAY)
+    #cv2.imshow("image_gray",image_gray)
     image_canny = cv2.Canny(image_gray, 0, 60)
+    #cv2.imshow("image_canny",image_canny)
 
     # ハフ変換処理
     circles = cv2.HoughCircles(image_canny, cv2.HOUGH_GRADIENT, 1,
@@ -498,7 +501,7 @@ def maxcoffee_detection():
 
     #DEBUG:
     di.add_contour_line(c_para, (128, 0, 255), 5)
-    #di.show()
+    di.show()
 
     #di.save()#yama
     print(max_area)
@@ -724,7 +727,7 @@ def compar_distance_and_send2RX(data1, data2, data3, data4, data5):
     else:    
         sum_taple = (data1, data2, data3, data4, data5)
         result = min(filter(lambda x: x[3] == 'let', sum_taple), key=lambda x: x[0])
-        
+        print("resultA = " + str(result))
         # 贅沢微糖とボール(赤または青)の同時判別処理
         double_get_flag = 0
         
@@ -755,7 +758,7 @@ def compar_distance_and_send2RX(data1, data2, data3, data4, data5):
             else:  # それ以外の場合はボールを選択
                 result = ball_data
         
-        print("result = " + str(result))
+        print("resultB = " + str(result))
         print("double_get_flag = " + str(double_get_flag))
 
         # 現在の対象物を取得
@@ -851,7 +854,7 @@ def compar_distance_and_send2RX_a(data1, data2, data3):
         # ボール判定
         ball_detected = data1[3] == "let" or data2[3] == "let"
         
-        if zeitaku_detected and ball_detected:
+        """if zeitaku_detected and ball_detected:
             double_get_flag = 1
             # 贅沢微糖の距離
             zeitaku_dist = data3[0]
@@ -872,7 +875,7 @@ def compar_distance_and_send2RX_a(data1, data2, data3):
                 result = data3
             else:  # それ以外の場合はボールを選択
                 result = ball_data
-        
+        """
         print("result = " + str(result))
         print("double_get_flag = " + str(double_get_flag))
         
@@ -886,20 +889,23 @@ def compar_distance_and_send2RX_a(data1, data2, data3):
         if two_collection_mode:
             # 初回の回収または前回ゴールした後の回収
             if previous_obj == 'None':
-                # 最初の対象物を記録
+                #最初の対象物を記録
                 first_obj = current_obj
-                # ボールか缶かを判定（'r'と'b'はボール、'z'は贅沢微糖）
+                #ボールか缶かを判定（'r'と'b'はボール、'z'は贅沢微糖）
                 is_ball = current_obj in ['r', 'b']
                 is_can = current_obj == 'z'
                 
+                print("debug2")
                 # 2つ目も回収する可能性がある場合
                 if is_ball or is_can:
                     go_to_goal = False  # ゴールに行かずに2つ目を探す
                     collect_two = True
+                    print("debug3")
                 else:
                     # それ以外はそのままゴールへ
                     go_to_goal = True
                     collect_two = False
+                    print("debug4")
             
             # 2つ目の回収判定
             elif collect_two:
@@ -908,21 +914,25 @@ def compar_distance_and_send2RX_a(data1, data2, data3):
                 first_is_can = first_obj == 'z'
                 current_is_ball = current_obj in ['r', 'b']
                 current_is_can = current_obj == 'z'
-                
+                print("debug5")
                 # ボールと缶の組み合わせなら連続回収
                 if (first_is_ball and current_is_can) or (first_is_can and current_is_ball):
                     go_to_goal = True  # 2つ目を回収してからゴールへ
+                    print("debug6")
                 else:
                     # 同じ種類なら1つ目だけ持ってゴールへ
                     go_to_goal = True
                     # 同じ種類の場合は2つ目を回収せずゴールへ指示
                     current_obj = 'g'  # 'g'はゴールを意味する特殊値
+                    print("debug7")
         else:
             # 連続回収モードでない場合は常にゴールへ
             go_to_goal = True
+            print("debug8")
         
         # ゴール指示フラグ (1:ゴールへ行く、0:次の対象物を探す)
         goal_flag = 1 if go_to_goal else 0
+        print("debug9")
         
         # 前回の対象物を更新
         if go_to_goal:
@@ -930,9 +940,11 @@ def compar_distance_and_send2RX_a(data1, data2, data3):
             previous_obj = 'None'
             collect_two = False
             first_obj = 'None'
+            print("debug10")
         else:
             # 続けて回収する場合は記録
             previous_obj = current_obj
+            print("debug11")
         
         print("goal_flag")
         print(goal_flag)
@@ -954,7 +966,7 @@ def compar_distance_and_send2RX_d(data1, data2):
     else:
         sum_taple = (data1, data2)
         result = min(filter(lambda x: x[3] == 'let', sum_taple), key=lambda x: x[0])
-        
+        print("debug12")
         # この関数では贅沢微糖とボールの同時検出はないため、double_get_flagは常に0
         double_get_flag = 0
         
@@ -965,7 +977,7 @@ def compar_distance_and_send2RX_d(data1, data2):
         current_obj = result[2]
         
         # ボールピラミッドかMax缶を検知したら、連続回収モードを終了
-        two_collection_mode = False
+        #two_collection_mode = False
         
         # 連続回収モードでない場合は常にゴールへ
         go_to_goal = True
@@ -978,8 +990,7 @@ def compar_distance_and_send2RX_d(data1, data2):
         collect_two = False
         first_obj = 'None'
         
-        print("goal_flag")
-        print(goal_flag)
+        print("goal_flag = "+ str(goal_flag))
         # RXに送信するコマンドを作成（goal_flagを追加）
         comand = bytes("t,{0},{1},{2},{3},{4}\n".format(
             result[0], result[1], 3, current_obj, goal_flag), "ascii")
