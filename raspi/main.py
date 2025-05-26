@@ -17,6 +17,8 @@ from debug import DebugImage
 # add:250509
 import RPi.GPIO as GPIO
 import threading
+import pygame
+import time
 
 ser = serial.Serial('/dev/ttyUSB0', 115200)
 
@@ -116,6 +118,7 @@ first_obj ='None'
 two_collection_mode = True
 
 MOTOR_PIN = 4
+
 
 # モータを回す関数
 def run_motor():
@@ -300,6 +303,7 @@ def cun_detection():
     #DEBUG:
     di = DebugImage(image, 'Cun Detection')
 
+    cv2.rectangle(image, (0, 390), (640, 480), (255, 255, 255), thickness=-1)
     #画像縮小膨張のためのカーネル
     #縮小
     kernel_1 = np.ones((2, 2), np.uint8)
@@ -308,7 +312,7 @@ def cun_detection():
 
 
     image_blur = cv2.medianBlur(image, 3)
-    #cv2.imshow("image_blur", image_blur)
+    cv2.imshow("image", image)
     # 背景差分処理
     fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
     fgmask = fgbg.apply(back_image)
@@ -348,7 +352,7 @@ def cun_detection():
 
     #DEBUG:
     di.add_circle_line(circles_para, (128, 0, 255), 5)
-    #di.show()
+    di.show()
 
     rawCapture.truncate(0)
     return circles_para
@@ -419,7 +423,7 @@ def ballpyramid_detection():
 
     #DEBUG:
     di.add_contour_line(c_para, (128, 0, 255), 5)
-    #di.show()
+    di.show()
 
     print(max_area)
     #cv2.imshow("pyramid", range_mask_pyramid)
@@ -665,7 +669,7 @@ def hough_calaculate_distance( circles_para, shape ):
         (x, y, radius) = (circles_para[0], circles_para[1], circles_para[2])
         # 贅沢微糖の処理
         print("radius:{}".format(radius))
-        if radius > 42.0:
+        if 57.0 > radius > 42.0:
             shape ='z'
 
             cv2.circle(image, (x, y), radius, (255, 0, 0), 2)
@@ -687,7 +691,7 @@ def hough_calaculate_distance( circles_para, shape ):
             miri_per_pixel_y = real_view_y / 480
 
             pixel_x = x - 320     #(320,370)を原点とした
-            pixel_y = y - 380
+            pixel_y = y - 390
 
             real_x = pixel_x * miri_per_pixel_x
             real_y = pixel_y * miri_per_pixel_y
@@ -1004,6 +1008,7 @@ def main():
     global back_image #背景画像
 
 
+
     #RXからsが送られてくるまで待機
     while True:
 
@@ -1027,6 +1032,9 @@ def main():
                 # スレッド開始
                 motor_thread = threading.Thread(target=run_motor)
                 motor_thread.start()
+                pygame.mixer.init()
+                pygame.mixer.music.load("/home/pi/prg/mekatoro/re.mp3")
+                pygame.mixer.music.play()
 
             if values == b"c\r\n":
                 # 背景画像を撮る
