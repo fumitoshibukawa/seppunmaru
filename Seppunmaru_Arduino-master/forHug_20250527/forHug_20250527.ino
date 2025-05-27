@@ -29,14 +29,14 @@ void RX2Arduino(void){
   //つかむ動作（閉まる動作）
   else if(PortD0 == HIGH && PortD1 == LOW && PortD2 == LOW && PortD3 == LOW){
     Serial.println("HUG_CATCH");
-    HUG.write(10);//close
+    HUG.write(0);//close
     LIFT.write(10);//down
   }
 
   //あげる動作（閉じて上）
   else if(PortD0 == LOW && PortD1 == HIGH && PortD2 == LOW && PortD3 == LOW){
     Serial.println("HUG_WAIT_UP");
-     HUG.write(10);//close
+     HUG.write(0);//close
      LIFT.write(70);//up 68
   }
 
