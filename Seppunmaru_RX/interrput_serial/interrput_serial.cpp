@@ -44,7 +44,7 @@ void abort(void);
 #define  END_POS 	   110
 #define  SECTION_HEIGHT 32.5f   //8個あるエリアの1つ分の辺の長さ30.0f(cm) //正確には，1～3：325mm, 4：225mm
 
-#define  RIGHT_SEARCH_START_POS		 55.0f  //51.7 [cm]→56
+#define  RIGHT_SEARCH_START_POS		 53.0f  //51.7 [cm]→56
 #define  LEFT_SEARCH_START_POS 		 96.0f  //93→95
 #define  ADJUSTMENT_SEARCH_START_POS  7.9f
 #define  DISTANCE_FROM_STEER_CENTER  21.0f //19.0f
@@ -1247,7 +1247,7 @@ void Collect(void)
 	//右前の探索開始位置に移動
 	//traj_tracking(30.0f, 0.0f, 2.0f);
 	translate(RIGHT_SEARCH_START_POS - ADJUSTMENT_SEARCH_START_POS); 
-	traj_tracking(ADJUSTMENT_SEARCH_START_POS *2 * PI / 4, -90.0f, 2.0f);
+	traj_tracking(ADJUSTMENT_SEARCH_START_POS *2 * PI / 4, -90.0f-2.0f, 2.0f);
 	//translate(RIGHT_SEARCH_START_POS);
 	//rotate(-90.0f);
 	//translate(ADJUSTMENT_SEARCH_START_POS);
@@ -1278,6 +1278,7 @@ void Collect(void)
 				switch(obj1.type){
 				    case RedBall:
 			    	case BlueBall:
+					obj1.type = None;	
 			        	break;
 				    case Zeitaku:
 				        catch_zeitaku(obj1.distance, obj1.angle);
@@ -1316,6 +1317,7 @@ void Collect(void)
 				switch(obj2.type){
 			    	case RedBall:
 			    	case BlueBall:
+					obj2.type = None;	
 			      		break;
 			    	case Zeitaku:
 			      		catch_zeitaku(obj2.distance, obj2.angle);
@@ -1418,6 +1420,7 @@ void Collect(void)
 				switch(obj1.type){
 				    case RedBall:
 			    	case BlueBall:
+					obj1.type = None;		//変更0529
 			        	break;
 				    case Zeitaku:
 				        catch_zeitaku(obj1.distance, obj1.angle);
@@ -1456,6 +1459,7 @@ void Collect(void)
 				switch(obj2.type){
 			    	case RedBall:
 			    	case BlueBall:
+					obj2.type = None;	//変更0529
 			      		break;
 			    	case Zeitaku:
 			      		catch_zeitaku(obj2.distance, obj2.angle);
@@ -1597,7 +1601,7 @@ void Collect(void)
 	rotate(90.0f);
 	//translate( 10.0f ); //ライントレースなしVer
 	translate( SECTION_HEIGHT * 2 - 10.0f - 20.0f ); //ライントレースありVer
-
+	
 	//////////////////////
 	/// 左3枠の回収処理 ///
 	//////////////////////
@@ -1672,14 +1676,14 @@ void Collect(void)
 				//ライントレース出来るところまで移動
 				translate( offset_search * step + ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2);
 				rotate(90.0f);
-				translate(38.0f);
+				//translate(38.0f);
 				break;
 			case MaxCoffee:
 				catch_maxcoffee(obj.distance, obj.angle);
 				//ライントレース出来るところまで移動
 				translate( offset_search * step + ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2);
 				rotate(90.0f);
-				translate(38.0f);
+				//translate(38.0f);
 				break;
 		}
 		//ライントレース出来るところまで移動
@@ -2257,6 +2261,11 @@ void main(void)
 		if( blue == 0 ){
 
 			rprintln("Pressed Blue-switch");
+			
+			ARM_MIDDLE;
+			sleep( 1000 );
+			while(1){
+			}
 
 			// 初期状態は大きさの問題からロボットをたたんでる．
 			// その状態から動作モードに変形
@@ -2284,16 +2293,26 @@ void main(void)
 		if( black == 0 ){
 			rprintln("Pressed Black-switch");
 			
+			
 			//ピラミッドチェック用
 			while (1){
 				HUG_PYRAMID_UP;
-				sleep( 500 );
+				sleep( 1000 );
 				HUG_PYRAMID_DOWN;
 				sleep( 500 );
+
+//				translate(-8);
+//				sleep(500);
+
 				HUG_CATCH;
+				translate(-8.0f);
 				sleep( 500 );
+				
 				HUG_WAIT_UP;
 				sleep( 500 );
+				
+				translate(8.0f);
+				sleep(500);
 			}
 			
 			// 紐の長さチェック用
@@ -3082,7 +3101,7 @@ void emit_blueball_last(Object obj2){
 		sleep( 200 );
 		traj_tracking( 50.0f, -5.0f, 3.0f );
 	}else {
-		translate(20.0f);
+		translate(19.0f);//20
 		rotate(-90.0f);
 		translate(10.0f);
 		Line_Trace( 2 );
@@ -3369,7 +3388,7 @@ void catch_ball(float distance, float angle){
 		//ブルドーザー
 		HUG_BULLDOZE;
 		sleep( 100 );
-		traj_tracking( -distance - 4.0f, 0.0f, 4.0f ); // 6.5f
+		traj_tracking( -distance - 3.0f, 0.0f, 4.0f ); // 6.5f -4.0f
 
 		//HUG
 		//HUG_WAIT_DOWN;
@@ -3377,14 +3396,14 @@ void catch_ball(float distance, float angle){
 		HUG_CATCH;
 		sleep( 300 );
 		HUG_WAIT_UP;
-		traj_tracking( distance, 0.0f, 3.0f );
+		traj_tracking( distance +2.0f, 0.0f, 3.0f );
 		//sleep( 200 );
 
 		//戻る
-		translate(2.0f); //6.5f
-		rotate(-180.0f);
+		//translate(2.0f); //6.5f
+		rotate(-180.0f-angle);
 		//translate(5.0f);
-		rotate(-angle);
+		//rotate(-angle);
 	}else{
 		//後退して向きを変える
 		//rotate(angle);
@@ -3497,20 +3516,48 @@ void catch_pyramid(float distance, float angle){
 	rotate(angle);
 	translate(-5.0f);
 	rotate(180.0f);
-	translate(-distance ); // 5.0 // -1.0f
+	//translate(-distance ); // 5.0 // -1.0f
 
 	//HUG
-	HUG_PYRAMID_UP;
+/*	HUG_PYRAMID_UP;
 	sleep( 300 );
 	HUG_PYRAMID_DOWN;
 	sleep( 300 );
 	HUG_CATCH;
 	sleep( 400 );
 	HUG_WAIT_UP;
+	sleep( 300 );*/
+	
+	HUG_PYRAMID_UP;
+	sleep( 200 );
+	
+	translate(-distance +3.0f);//1.5
+	
+	HUG_PYRAMID_DOWN;
 	sleep( 300 );
 
+	HUG_CATCH;
+	translate(-8.0f);
+	sleep( 300 );
+	
+/*	rotate(30.0f);
+	sleep(200);
+	rotate(-.600f);
+	sleep(200);
+	rotate(30.0f);
+	sleep(200);*/
+	
+								
+	HUG_WAIT_UP;
+	sleep( 200 );
+				
+	//translate(8.0f);
+	//sleep(300);
+	
+	
+
 	//戻る
-	translate(distance + 5.0f); // 5.0 // 2.0
+	translate(distance); // 5.0 // 2.0
 	rotate( -angle);
 	//translate(5.0f);
 	//rotate(-angle);
@@ -3524,10 +3571,10 @@ void catch_maxcoffee(float distance, float angle){
 	rotate(angle);
 	translate(-5.0f);
 	rotate(-180.0f);
-	translate(-distance - 4.0f); // 6.5f -2.0
+	translate(-distance - 2.0f); // 6.5f -2.0
 
-	HUG_PYRAMID_UP;
-	sleep( 100 );
+	//HUG_PYRAMID_UP;
+	//sleep( 100 );
 	HUG_PYRAMID_DOWN;
 	sleep( 150 ); //300
 	
@@ -3536,7 +3583,7 @@ void catch_maxcoffee(float distance, float angle){
 	sleep( 150 ); //200
 	
 	//戻る
-	translate(distance + 4.0f); //6.5f
+	translate(distance + 2.0f); //6.5f
 	
 	HUG_WAIT_UP;
 	//sleep( 300 );

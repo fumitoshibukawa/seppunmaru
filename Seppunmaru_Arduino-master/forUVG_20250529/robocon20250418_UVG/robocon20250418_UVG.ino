@@ -31,12 +31,12 @@ void RX2Arduino(void){
   }
   else if(state6 == LOW && state7 == HIGH && state4 == LOW){
     //Serial.println("Arm_Middle");  // 持ち上げる
-    servo1.write(140);  // 大きいと平行リンク持ち上げ 大
-    servo2.write(200);
+    servo1.write(150);  // 大きいと平行リンク持ち上げ 大 //140
+    servo2.write(190);
   }
   else if(state6 == HIGH && state7 == LOW && state4 == LOW){
     //Serial.println("Arm_Low");  // 下げる
-    servo1.write(50);
+    servo1.write(80);
     servo2.write(50);
   }
   else if(state6 == HIGH && state7 == HIGH && state4 == LOW){
@@ -74,7 +74,7 @@ void RX2Arduino(void){
   
   else{
     //Serial.println("Arm_Stay");
-    servo1.write(140);
+    servo1.write(150); //140
     //servo2.write(10);
   }
   
@@ -138,6 +138,10 @@ void setup() {
   pinMode(trigPin, OUTPUT);
   pinMode(12, OUTPUT); // 超音波センサスイッチング用
 
+//  LIFT.write(10);
+  //HUG.write(170); // 元の値
+//  HUG.write(160);
+
 }
 
 void loop() {
@@ -148,7 +152,7 @@ void loop() {
   //HUG.write(170); // 元の値
   HUG.write(160);
 
-  servo1.write(50);
+  servo1.write(80);
   servo2.write(50);
 
   delay(3000);
