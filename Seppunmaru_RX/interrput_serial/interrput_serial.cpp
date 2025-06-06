@@ -44,8 +44,8 @@ void abort(void);
 #define  END_POS 	   110
 #define  SECTION_HEIGHT 32.5f   //8個あるエリアの1つ分の辺の長さ30.0f(cm) //正確には，1～3：325mm, 4：225mm
 
-#define  RIGHT_SEARCH_START_POS		 53.0f  //51.7 [cm]→56
-#define  LEFT_SEARCH_START_POS 		 96.0f  //93→95
+#define  RIGHT_SEARCH_START_POS		 52.0f  //51.7 [cm]→56
+#define  LEFT_SEARCH_START_POS 		 94.5f  //93→95→96
 #define  ADJUSTMENT_SEARCH_START_POS  7.9f
 #define  DISTANCE_FROM_STEER_CENTER  21.0f //19.0f
 
@@ -269,6 +269,7 @@ void PUT_PET( void );
 
 //画像認識を実行し，結果を受け取る関数
 Object search_oneball_or_zeitaku(void);
+Object search_zeitaku(void);
 Object search_maxcoffee_or_pyramid(void);
 
 // 各種フラグ関係の初期化
@@ -1104,7 +1105,7 @@ void Line_Trace( int lap )
 			if( Photo_RR == 0 && Photo_RL == 0 ){
 				All_black_flag= 1;
 				rprintln("Find_ABF");
-				sleep( 20 );
+				sleep( 22 );
 			}
 		}
 		All_black_flag = 0;
@@ -1259,10 +1260,17 @@ void Collect(void)
 	for(step = 0; step < max_search_front; step++){
 	// Collect関数内の各オブジェクト検出後の動作判断部分に追加
 	// 例：
-		if (goal_flag == 0) {
+		if (goal_flag == 0 && step != 6 ) {
 			obj1 = search_oneball_or_zeitaku();
-		} else {
+		} 
+		else if (goal_flag == 1 && step != 6 ){ 
 			obj2 = search_oneball_or_zeitaku();
+		} 
+		else if ( goal_flag == 0 && step == 6 ){
+			obj1 = search_zeitaku();
+		} 
+		else if ( goal_flag == 1 && step == 6 ){
+			obj2 = search_zeitaku();
 		}
 		rprint("right12:");
 		rprint(int16_t(step));
@@ -1276,13 +1284,11 @@ void Collect(void)
 			if(step == 6){
 				//見つけた位置から回収する
 				switch(obj1.type){
-				    case RedBall:
-			    	case BlueBall:
-					obj1.type = None;	
-			        	break;
 				    case Zeitaku:
 				        catch_zeitaku(obj1.distance, obj1.angle);
 				        break;
+					default:
+						break; 
 				}
 			}else{
 				//見つけた位置から回収する
@@ -1315,10 +1321,6 @@ void Collect(void)
 			if(step == 6){
 				//見つけた位置から回収する
 				switch(obj2.type){
-			    	case RedBall:
-			    	case BlueBall:
-					obj2.type = None;	
-			      		break;
 			    	case Zeitaku:
 			      		catch_zeitaku(obj2.distance, obj2.angle);
 			     		break;
@@ -1376,12 +1378,16 @@ void Collect(void)
 				emit_zeitaku(obj2);
 				break;
 		}
-		
 		//探索していた位置に移動
-		translate(RIGHT_SEARCH_START_POS - (offset_search * step + ADJUSTMENT_SEARCH_START_POS));
-		traj_tracking( (offset_search * step + ADJUSTMENT_SEARCH_START_POS) * 2 * PI / 4, -91.0f, 3.0f);
-		//rotate(-90.0f);
-		//translate(offset_search * step + ADJUSTMENT_SEARCH_START_POS);
+		if(step>=5){
+			traj_tracking( RIGHT_SEARCH_START_POS * 2 * PI / 4, -91.0f, 3.0f);
+			translate(offset_search * step + ADJUSTMENT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
+		}else{
+			translate(RIGHT_SEARCH_START_POS - (offset_search * step + ADJUSTMENT_SEARCH_START_POS));
+			traj_tracking( (offset_search * step + ADJUSTMENT_SEARCH_START_POS) * 2 * PI / 4, -91.0f, 3.0f);
+			//rotate(-90.0f);
+			//translate(offset_search * step + ADJUSTMENT_SEARCH_START_POS);
+		}
 		//このループをもう一度
 		goal_flag = 0;
 		step -= 1;
@@ -1401,11 +1407,20 @@ void Collect(void)
 	//////////////////////
 	for(step = 0; step < max_search_front; step++){
 	// Collect関数内の各オブジェクト検出後の動作判断部分に追加
-		if (goal_flag == 0) {
+		if (goal_flag == 0 && step != 6) {
 			obj1 = search_oneball_or_zeitaku();
-		} else {
+		} 
+		else if (goal_flag == 1 && step != 6) {
 			obj2 = search_oneball_or_zeitaku();
+		} 
+		else if (goal_flag == 0 && step == 6) {
+			obj1 = search_zeitaku();
+		} 
+		else if (goal_flag == 1 && step == 6) {
+			obj2 = search_zeitaku();
 		}
+		
+		
 		rprint("left12:");
 		rprint(int16_t(step));
 		if (goal_flag == 0){
@@ -1418,13 +1433,11 @@ void Collect(void)
 			if(step == 6){
 				//見つけた位置から回収する
 				switch(obj1.type){
-				    case RedBall:
-			    	case BlueBall:
-					obj1.type = None;		//変更0529
-			        	break;
 				    case Zeitaku:
 				        catch_zeitaku(obj1.distance, obj1.angle);
 				        break;
+					default:
+						break;
 				}
 			}else{
 				//見つけた位置から回収する
@@ -1516,7 +1529,7 @@ void Collect(void)
 	if (goal_flag == 1 && step == max_search_front){
 		// ゴールに向かう処理
 		//ライントレース出来るところまで移動
-		translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS); // -1.0f削除
+		translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS +2.0f); // -1.0f削除
 	    rotate(-90.0f);
 		translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
 	    //ライントレースで一本目のところまで行く
@@ -1723,10 +1736,10 @@ void Collect(void)
 		rprint(int16_t(step));
 		if (goal_flag == 0){
 			if (obj1.type != RedBall && obj1.type != BlueBall && obj1.type != Zeitaku){
-    		//何もないとき or 認識不可
-    		//最後以外は、前方に少し進める
- 	  		 translate(offset_search);
-   			 continue;
+	    		//何もないとき or 認識不可
+	    		//最後以外は、前方に少し進める
+	 	  		 translate(offset_search);
+	   			 continue;
 			}
 			//見つけた位置から回収する
 			switch(obj1.type){
@@ -1755,7 +1768,7 @@ void Collect(void)
 	}
 	
 	// 万が一何も見つけられずにMaxまでサーチした場合
-	if (goal_flag == 1 && step == max_search_back){
+	if (step == max_search_back){
 		// 次のオブジェクトを探す処理
 	    // 現在位置を保持して次のオブジェクトを探す
 	    rprintln("Searching for next object");
@@ -1773,14 +1786,41 @@ void Collect(void)
 	/// 左4枠の回収処理 ///
 	//////////////////////
 	for(int step = 0; step < max_search_back; step++){
-		if (goal_flag == 1) {
+		if (goal_flag == 0) {
+			obj1 = search_oneball_or_zeitaku();
+		}else if(goal_flag == 1){
 			obj2 = search_oneball_or_zeitaku();
-		}
+		} 
 		rprint("left4:");
 		rprint(int16_t(step));
-		if (goal_flag == 1) {
-				
-			if (obj2.type != RedBall && obj2.type != BlueBall && obj2.type != Zeitaku && obj2.type != Goal){
+		if (goal_flag == 0){
+			if (obj1.type != RedBall && obj1.type != BlueBall && obj1.type != Zeitaku){
+	    	//何もないとき or 認識不可
+    		//最後以外は、前方に少し進める
+   			 translate(offset_search);
+ 	  		 continue;
+			}
+			//見つけた位置から回収する
+			switch(obj1.type){
+			    case RedBall:
+		    	case BlueBall:
+					catch_ball(obj1.distance, obj1.angle);
+		        	break;
+			    case Zeitaku:
+			        catch_zeitaku(obj1.distance, obj1.angle);
+			        break;
+			}
+			// 次のオブジェクトを探す処理
+		    // 現在位置を保持して次のオブジェクトを探す
+		    rprintln("Searching for next object");
+		    // ここに追加の処理（必要に応じて）
+		    translate(offset_search); // 次のステップへ進む
+			goal_flag = 1;
+		    continue;
+ 
+		// 追加：ゴールフラグに基づいて次の動作を決定
+		} else if (goal_flag == 1) {
+			if (obj2.type != RedBall && obj2.type != BlueBall && obj2.type != Zeitaku&& obj2.type != Goal){
     			//何もないとき or 認識不可
     			//最後以外は、前方に少し進める
    		 		translate(offset_search);
@@ -1798,10 +1838,9 @@ void Collect(void)
 				case Goal:
 					break;
 			}
-		    // ゴールに向かう処理
 		    //ライントレース出来るところまで移動
 			//rotate(-180.0f);
-		    translate( - offset_search * step - SECTION_HEIGHT * 3 - ADJUSTMENT_SEARCH_START_POS + 3.0f); // -1.0f削除
+		    translate( - offset_search * step - SECTION_HEIGHT * 3 - ADJUSTMENT_SEARCH_START_POS + 4.0f); // -1.0f削除
 		    rotate(-90.0f);
 			translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
 		    //ライントレースで一本目のところまで行く
@@ -1819,7 +1858,6 @@ void Collect(void)
 				emit_zeitaku_last(obj2);
 				break;
 		}
-		
 	}
 /*
 	//////////////////////
@@ -2616,6 +2654,67 @@ Object search_oneball_or_zeitaku(void){
 
 }
 
+Object search_zeitaku(void){
+		//Raspiへのシリアル通信
+	//ボールと贅沢微糖の画像認識を実行する
+	rflush();
+	rprintln("c");
+	int size = read_Line();  //結果を読み込み
+
+	//得られた文字列を分割
+	char *mode, *frst, *scnd, *thrd, *type, *goal;
+
+	mode = strtok(input_buffer,",");
+	frst = strtok(NULL,","); //距離
+	scnd = strtok(NULL,","); //角度
+	thrd = strtok(NULL,","); //時間（3）
+	type = strtok(NULL,","); //r, b. z. m, p, g：２種類同じものを検出し，１つだけをもってゴールへ
+	goal = strtok(NULL,","); //goal_flag = 1ならゴールへ向かう
+	
+	
+	if(mode[0] == 'n'){
+		//物体を見つけられなかった場合
+		Object obj = {None, 0.0f, 0.0f};
+		return obj;
+	}
+
+	//結果をdouble型に変換
+	double x1, x2, x3, cal_dis, cal_deg;
+	x1 = atof(frst);  // [mm]
+	x2 = atof(scnd);  // [deg]
+	x3 = atof(thrd);  // [s] 使っていない
+	
+	int goal_flag = atoi(goal);
+		
+	//車体からの相対位置の算出
+	float cal_distance = calculate_distance_from_steer_center(x1, x2);
+	float cal_angle = calculate_angle_from_steer_center(x1, x2);
+
+	if( goal_flag == 0 ){
+		if (type[0] == 'r') obj1.type = RedBall;
+		else if (type[0] == 'b') obj1.type = BlueBall;
+		else if (type[0] == 'z') obj1.type = Zeitaku;
+		else if (type[0] == 'g') obj1.type = Goal;
+		else obj1.type = None;
+		obj1.distance = cal_distance;
+		obj1.angle = cal_angle;	
+	
+		return obj1;
+	
+	}else {
+		if (type[0] == 'r') obj2.type = RedBall;
+		else if (type[0] == 'b') obj2.type = BlueBall;
+		else if (type[0] == 'z') obj2.type = Zeitaku;
+		else if (type[0] == 'g') obj2.type = Goal;
+		else obj2.type = None;
+		obj2.distance = cal_distance;
+		obj2.angle = cal_angle;
+		
+		return obj2;
+	}
+}
+	
+
 // ------------------------------------------------------
 // --- マックス缶(横おき)とボールピラミッドを探索する -------
 // --- return: Object構造体　取るべき対象物を1つだけ返す ---
@@ -3191,7 +3290,7 @@ void emit_zeitaku_last(Object obj2){
 		OPEN_UP;
 		sleep( 150 ); //200
 		
-		translate(20.0f);
+		translate(19.0f);
 		rotate(-90.0f);
 		translate(10.0f);
 		Line_Trace( 2 );
@@ -3460,17 +3559,21 @@ void catch_zeitaku(float distance, float angle){
 		//磁石でキャッチ
 		translate(-distance +6.0f);
 	}else if(distance<=20.0f){
-		translate(distance -7.0f); // -5.0f追加,-7.0
+		translate(distance -7.5f); // -5.0f追加,-7.0
 		//磁石でキャッチ
-		translate(-distance +7.0f);
+		translate(-distance +7.5f);
 	}else if(distance<=25.0f){
-		translate(distance -8.0f); // -5.0f追加,-7.0
+		translate(distance -8.5f); // -5.0f追加,-7.0
 		//磁石でキャッチ
-		translate(-distance +8.0f);
-	}else{
+		translate(-distance +8.5f);
+	}else if(distance<=30.0f){
 		translate(distance -9.0f); // -5.0f追加
 		//磁石でキャッチ
 		translate(-distance +9.0f);
+	}else{
+		translate(distance -10.0f); // -5.0f追加
+		//磁石でキャッチ
+		translate(-distance +10.0f);
 	}
 
 	//UVG
@@ -3537,7 +3640,7 @@ void catch_pyramid(float distance, float angle){
 	sleep( 300 );
 
 	HUG_CATCH;
-	translate(-8.0f);
+	translate(-9.0f);//8.0
 	sleep( 300 );
 	
 /*	rotate(30.0f);
@@ -3557,7 +3660,7 @@ void catch_pyramid(float distance, float angle){
 	
 
 	//戻る
-	translate(distance); // 5.0 // 2.0
+	translate(distance+1.0f); // 5.0 // 2.0
 	rotate( -angle);
 	//translate(5.0f);
 	//rotate(-angle);

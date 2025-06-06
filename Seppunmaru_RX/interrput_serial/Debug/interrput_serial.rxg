@@ -1,4 +1,4 @@
 -cpu=rx600
--output="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\interrput_serial.lib"
+-output="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\interrput_serial.lib"
 -lang=c99
 -head=runtime,math,mathf,stdio,stdlib,string,new

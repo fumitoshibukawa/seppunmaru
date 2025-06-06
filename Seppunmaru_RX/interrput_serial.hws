@@ -3,12 +3,12 @@
 [DATABASE_VERSION]
 "11.0" 
 [WORKSPACE_DETAILS]
-"interrput_serial" "C:\seppun\Seppunmaru_RX" "C:\seppun\Seppunmaru_RX\interrput_serial.hws" "RX" "Renesas RX Standard" 
+"interrput_serial" "C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605" "C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial.hws" "RX" "Renesas RX Standard" 
 [SHARED_WORKSPACE_CONTROL_STATUS]
 "" "" "" 
 "" "" "" 
 [PROJECTS]
-"interrput_serial" "C:\seppun\Seppunmaru_RX\interrput_serial" "C:\seppun\Seppunmaru_RX\interrput_serial\interrput_serial.hwp" 0 
+"interrput_serial" "C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial" "C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\interrput_serial.hwp" 0 
 [INFORMATION]
 "ワークスペース情報がありません" 
 [SCRAP]

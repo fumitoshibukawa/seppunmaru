@@ -1,6 +1,6 @@
 -cpu=rx600
 -lang=cpp
--output=obj="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\hwsetup.obj"
+-output=obj="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\hwsetup.obj"
 -debug
-"C:\seppun\Seppunmaru_RX\interrput_serial\hwsetup.cpp"
+"C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\hwsetup.cpp"
 -nologo

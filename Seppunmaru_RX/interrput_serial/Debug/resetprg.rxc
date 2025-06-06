@@ -1,6 +1,6 @@
 -cpu=rx600
 -lang=c99
--output=obj="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\resetprg.obj"
+-output=obj="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\resetprg.obj"
 -debug
-"C:\seppun\Seppunmaru_RX\interrput_serial\resetprg.c"
+"C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\resetprg.c"
 -nologo
