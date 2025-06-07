@@ -2287,6 +2287,11 @@ void main(void)
 
 			// 回収・運搬作業
 			Collect();
+			
+			//Raspiへのシリアル通信
+			//終了時のボイス
+			rflush();
+			rprintln("f");
 
 			// 終了
 			cool_down();
@@ -3493,7 +3498,7 @@ void catch_ball(float distance, float angle){
 		//HUG_WAIT_DOWN;
 		//sleep( 300 );
 		HUG_CATCH;
-		sleep( 300 );
+		sleep( 450 );
 		HUG_WAIT_UP;
 		traj_tracking( distance +2.0f, 0.0f, 3.0f );
 		//sleep( 200 );
@@ -3518,7 +3523,7 @@ void catch_ball(float distance, float angle){
 		//HUG_WAIT_DOWN;
 		//sleep( 300 );
 		HUG_CATCH;
-		sleep( 300 );
+		sleep( 350 );
 		HUG_WAIT_UP;
 		traj_tracking( distance + 2.0f, 0.0f, 3.0f );
 		//sleep( 200 );

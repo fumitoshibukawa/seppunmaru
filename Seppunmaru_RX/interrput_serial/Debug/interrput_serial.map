@@ -1,26 +1,26 @@
-Optimizing Linkage Editor (V.10.02.00.000)        07-Jun-2025 02:28:16
+Optimizing Linkage Editor (V.10.02.00.000)        08-Jun-2025 03:42:21
 
 *** Options ***
 
--subcommand=C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\interrput_serial.hlk
+-subcommand=C:\seppun\Seppunmaru_RX\interrput_serial\Debug\interrput_serial.hlk
 -rom=D=R,D_1=R_1,D_2=R_2
 -nomessage
--list="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\interrput_serial.map"
+-list="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\interrput_serial.map"
 -nooptimize
 -start=B_1,R_1,B_2,R_2,B,R,SU,SI/01000,PResetPRG/0FFFF8000,C_1,C_2,C,C$*,D_1,D_2,D,P,PIntPRG,W*,L/0FFFF8100,FIXEDVECT/0FFFFFFD0
 -nologo
--input="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\dbsct.obj"
--input="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\hwsetup.obj"
--input="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\interrput_serial.obj"
--input="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\intprg.obj"
--input="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\resetprg.obj"
--input="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\rx62_serial.obj"
--input="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\sbrk.obj"
--input="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\serial.obj"
--input="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\value.obj"
--input="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\vecttbl.obj"
--library="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\interrput_serial.lib"
--output="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\interrput_serial.abs"
+-input="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\dbsct.obj"
+-input="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\hwsetup.obj"
+-input="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\interrput_serial.obj"
+-input="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\intprg.obj"
+-input="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\resetprg.obj"
+-input="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\rx62_serial.obj"
+-input="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\sbrk.obj"
+-input="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\serial.obj"
+-input="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\value.obj"
+-input="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\vecttbl.obj"
+-library="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\interrput_serial.lib"
+-output="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\interrput_serial.abs"
 -end
 
 *** Error information ***
@@ -66,16 +66,16 @@ D_2
 D
                                   ffff8ca4  ffff8f73       2d0   4
 P
-                                  ffff8f74  fffff71c      67a9   1
+                                  ffff8f74  fffff72a      67b7   1
 PIntPRG
-                                  fffff71d  fffff8a2       186   1
+                                  fffff72b  fffff8b0       186   1
 W_1
-                                  fffff8a3  fffff8a3         0   1
+                                  fffff8b1  fffff8b1         0   1
 W_2
-                                  fffff8a4  fffff8b5        12   2
+                                  fffff8b2  fffff8c3        12   2
 W
-                                  fffff8b8  fffff8b8         0   4
+                                  fffff8c4  fffff8c4         0   4
 L
-                                  fffff8b8  fffffab4       1fd   4
+                                  fffff8c4  fffffac0       1fd   4
 FIXEDVECT
                                   ffffffd0  ffffffff        30   4

@@ -1,0 +1,81 @@
+Optimizing Linkage Editor (V.10.02.00.000)        08-Jun-2025 04:37:12
+
+*** Options ***
+
+-subcommand=C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\interrput_serial.hlk
+-rom=D=R,D_1=R_1,D_2=R_2
+-nomessage
+-list="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\interrput_serial.map"
+-nooptimize
+-start=B_1,R_1,B_2,R_2,B,R,SU,SI/01000,PResetPRG/0FFFF8000,C_1,C_2,C,C$*,D_1,D_2,D,P,PIntPRG,W*,L/0FFFF8100,FIXEDVECT/0FFFFFFD0
+-nologo
+-input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\dbsct.obj"
+-input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\hwsetup.obj"
+-input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\interrput_serial.obj"
+-input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\intprg.obj"
+-input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\resetprg.obj"
+-input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\rx62_serial.obj"
+-input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\sbrk.obj"
+-input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\serial.obj"
+-input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\value.obj"
+-input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\vecttbl.obj"
+-library="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\interrput_serial.lib"
+-output="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\interrput_serial.abs"
+-end
+
+*** Error information ***
+
+** L1100 (W) Cannot find "SU" specified in option "start"
+
+*** Mapping List ***
+
+SECTION                            START      END         SIZE   ALIGN
+
+B_1
+                                  00001000  0000102a        2b   1
+R_1
+                                  0000102b  0000109e        74   1
+B_2
+                                  000010a0  00001151        b2   2
+R_2
+                                  00001152  00001169        18   2
+B
+                                  0000116c  0001311b     11fb0   4
+R
+                                  0001311c  000133ef       2d4   4
+SI
+                                  000133f0  000136ef       300   4
+PResetPRG
+                                  ffff8000  ffff802d        2e   1
+C_1
+                                  ffff8100  ffff8451       352   1
+C_2
+                                  ffff8452  ffff8673       222   2
+C
+                                  ffff8674  ffff87db       168   4
+C$DSEC
+                                  ffff87dc  ffff87ff        24   4
+C$BSEC
+                                  ffff8800  ffff8817        18   4
+C$VECT
+                                  ffff8818  ffff8c17       400   4
+D_1
+                                  ffff8c18  ffff8c8b        74   1
+D_2
+                                  ffff8c8c  ffff8ca3        18   2
+D
+                                  ffff8ca4  ffff8f77       2d4   4
+P
+                                  ffff8f78  fffff1fe      6287   1
+PIntPRG
+                                  fffff1ff  fffff384       186   1
+W_1
+                                  fffff385  fffff385         0   1
+W_2
+                                  fffff386  fffff397        12   2
+W
+                                  fffff398  fffff398         0   4
+L
+                                  fffff398  fffff578       1e1   4
+FIXEDVECT
+                                  ffffffd0  ffffffff        30   4

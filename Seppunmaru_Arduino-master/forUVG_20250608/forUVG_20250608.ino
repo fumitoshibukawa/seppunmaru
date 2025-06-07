@@ -31,8 +31,8 @@ void RX2Arduino(void){
   }
   else if(state6 == LOW && state7 == HIGH && state4 == LOW){
     //Serial.println("Arm_Middle");  // 持ち上げる
-    servo1.write(150);  // 大きいと平行リンク持ち上げ 大 //140
-    servo2.write(190);
+    servo1.write(155);  // 大きいと平行リンク持ち上げ 大 //140
+    servo2.write(195);
   }
   else if(state6 == HIGH && state7 == LOW && state4 == LOW){
     //Serial.println("Arm_Low");  // 下げる

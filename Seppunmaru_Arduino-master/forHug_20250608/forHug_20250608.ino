@@ -37,7 +37,7 @@ void RX2Arduino(void){
   else if(PortD0 == LOW && PortD1 == HIGH && PortD2 == LOW && PortD3 == LOW){
     Serial.println("HUG_WAIT_UP");
      HUG.write(0);//close
-     LIFT.write(68);//up 68
+     LIFT.write(70);//up 68
   }
 
   //はなす動作（上で開く）
@@ -45,7 +45,7 @@ void RX2Arduino(void){
     Serial.println("OPEN_UP");
     HUG.write(160);//open
     //HUG.write(150);//元の値
-    LIFT.write(68);//up 68
+    LIFT.write(70);//up 68
   }
   
   //スタートポジ（MAXまで開く．競技台に入る）
@@ -62,7 +62,7 @@ void RX2Arduino(void){
   if(PortD0 == LOW && PortD1 == LOW && PortD2 == HIGH && PortD3 == HIGH){
     Serial.println("HUG_PYRAMID_UP");
     HUG.write(100); //80
-    LIFT.write(68);
+    LIFT.write(70);
   }
 
   //ピラミッド回収時の状態(三角形のまま下す)

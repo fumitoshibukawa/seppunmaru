@@ -1,6 +1,6 @@
 -cpu=rx600
 -lang=c99
--output=obj="C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\Debug\vecttbl.obj"
+-output=obj="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\vecttbl.obj"
 -debug
-"C:\Users\shibu\Downloads\Seppunmaru_RX_0605\Seppunmaru_RX_0605\interrput_serial\vecttbl.c"
+"C:\seppun\Seppunmaru_RX\interrput_serial\vecttbl.c"
 -nologo
