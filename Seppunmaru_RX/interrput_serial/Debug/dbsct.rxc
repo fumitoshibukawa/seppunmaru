@@ -1,6 +1,6 @@
 -cpu=rx600
 -lang=c99
--output=obj="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\dbsct.obj"
+-output=obj="C:\Users\shibu\Downloads\Seppunmaru_RX_0609\Seppunmaru_RX_0609\interrput_serial\Debug\dbsct.obj"
 -debug
-"C:\seppun\Seppunmaru_RX\interrput_serial\dbsct.c"
+"C:\Users\shibu\Downloads\Seppunmaru_RX_0609\Seppunmaru_RX_0609\interrput_serial\dbsct.c"
 -nologo

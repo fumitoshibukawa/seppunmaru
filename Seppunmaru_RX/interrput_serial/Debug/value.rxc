@@ -1,6 +1,6 @@
 -cpu=rx600
 -lang=cpp
--output=obj="C:\seppun\Seppunmaru_RX\interrput_serial\Debug\value.obj"
+-output=obj="C:\Users\shibu\Downloads\Seppunmaru_RX_0609\Seppunmaru_RX_0609\interrput_serial\Debug\value.obj"
 -debug
-"C:\seppun\Seppunmaru_RX\interrput_serial\value.cpp"
+"C:\Users\shibu\Downloads\Seppunmaru_RX_0609\Seppunmaru_RX_0609\interrput_serial\value.cpp"
 -nologo
