@@ -1,10 +1,10 @@
--We=--template_info_file="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\tpldir\interrput_serial.ti"
--We=--ii_file="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\tpldir\interrput_serial.ii"
+-We=--template_info_file="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\tpldir\interrput_serial.ti"
+-We=--ii_file="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\tpldir\interrput_serial.ii"
 -We=--no_auto_instantiation
  
--output=obj="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\interrput_serial.obj"
+-output=obj="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\interrput_serial.obj"
 -nologo
 -cpu=rx600
 -lang=cpp
 -debug
-"C:\seppun\Seppunmaru_RX_5min\interrput_serial\interrput_serial.cpp"
+"C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\interrput_serial.cpp"

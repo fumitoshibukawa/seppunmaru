@@ -1,26 +1,26 @@
-Optimizing Linkage Editor (V.10.02.00.000)        08-Jun-2025 04:37:12
+Optimizing Linkage Editor (V.10.02.00.000)        14-Jun-2025 02:02:48
 
 *** Options ***
 
--subcommand=C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\interrput_serial.hlk
+-subcommand=C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\interrput_serial.hlk
 -rom=D=R,D_1=R_1,D_2=R_2
 -nomessage
--list="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\interrput_serial.map"
+-list="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\interrput_serial.map"
 -nooptimize
 -start=B_1,R_1,B_2,R_2,B,R,SU,SI/01000,PResetPRG/0FFFF8000,C_1,C_2,C,C$*,D_1,D_2,D,P,PIntPRG,W*,L/0FFFF8100,FIXEDVECT/0FFFFFFD0
 -nologo
--input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\dbsct.obj"
--input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\hwsetup.obj"
--input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\interrput_serial.obj"
--input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\intprg.obj"
--input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\resetprg.obj"
--input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\rx62_serial.obj"
--input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\sbrk.obj"
--input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\serial.obj"
--input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\value.obj"
--input="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\vecttbl.obj"
--library="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\interrput_serial.lib"
--output="C:\seppun\Seppunmaru_RX_5min\interrput_serial\Debug\interrput_serial.abs"
+-input="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\dbsct.obj"
+-input="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\hwsetup.obj"
+-input="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\interrput_serial.obj"
+-input="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\intprg.obj"
+-input="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\resetprg.obj"
+-input="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\rx62_serial.obj"
+-input="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\sbrk.obj"
+-input="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\serial.obj"
+-input="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\value.obj"
+-input="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\vecttbl.obj"
+-library="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\interrput_serial.lib"
+-output="C:\Users\shibu\Downloads\Seppunmaru_RX_0613_5min\Seppunmaru_RX_0613_5min\interrput_serial\Debug\interrput_serial.abs"
 -end
 
 *** Error information ***
@@ -42,9 +42,9 @@ R_2
 B
                                   0000116c  0001311b     11fb0   4
 R
-                                  0001311c  000133ef       2d4   4
+                                  0001311c  000133f3       2d8   4
 SI
-                                  000133f0  000136ef       300   4
+                                  000133f4  000136f3       300   4
 PResetPRG
                                   ffff8000  ffff802d        2e   1
 C_1
@@ -64,18 +64,18 @@ D_1
 D_2
                                   ffff8c8c  ffff8ca3        18   2
 D
-                                  ffff8ca4  ffff8f77       2d4   4
+                                  ffff8ca4  ffff8f7b       2d8   4
 P
-                                  ffff8f78  fffff1fe      6287   1
+                                  ffff8f7c  fffff2ed      6372   1
 PIntPRG
-                                  fffff1ff  fffff384       186   1
+                                  fffff2ee  fffff473       186   1
 W_1
-                                  fffff385  fffff385         0   1
+                                  fffff474  fffff474         0   1
 W_2
-                                  fffff386  fffff397        12   2
+                                  fffff474  fffff485        12   2
 W
-                                  fffff398  fffff398         0   4
+                                  fffff488  fffff488         0   4
 L
-                                  fffff398  fffff578       1e1   4
+                                  fffff488  fffff664       1dd   4
 FIXEDVECT
                                   ffffffd0  ffffffff        30   4

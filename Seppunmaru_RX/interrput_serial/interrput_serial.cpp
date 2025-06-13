@@ -45,7 +45,7 @@ void abort(void);
 #define  SECTION_HEIGHT 32.5f   //8個あるエリアの1つ分の辺の長さ30.0f(cm) //正確には，1～3：325mm, 4：225mm
 
 #define  RIGHT_SEARCH_START_POS		 52.0f  //51.7 [cm]→56
-#define  LEFT_SEARCH_START_POS 		 93.5f  //93→95→96→94.5
+#define  LEFT_SEARCH_START_POS 		 94.5f  //93→95→96→94.5
 #define  ADJUSTMENT_SEARCH_START_POS  7.9f
 #define  DISTANCE_FROM_STEER_CENTER  21.0f //19.0f
 
@@ -91,6 +91,8 @@ void Collect();
 
 // サーチの回数
 int step = 0;
+
+int dble_flag=0;
 
 // シリアル通信の受信用
 int16_t charget();
@@ -144,8 +146,8 @@ void Line_Trace( int lap );
 void Line_Trace_Slow( int lap );
 
 //ライントレース後退
-void Line_Trace_BACK(int lap);
-void Line_Trace_PD_BACK( int sensor_2, int sensor_3 );
+//void Line_Trace_BACK(int lap);
+//void Line_Trace_PD_BACK( int sensor_2, int sensor_3 );
 
 // ペットボトルまで直接向かうライントレース
 void Go2Pet( void );
@@ -264,7 +266,7 @@ void back_set_posi_UVG( float dis, float deg, float time, char color, int16_t se
 */
 void return_to_line(void);
 
-void return_to_line_back(void);
+//void return_to_line_back(void);
 
 // ペットボトルをとる処理をした後に，ペットボトルをおく処理
 void PUT_PET( void );
@@ -364,12 +366,12 @@ void int_cmt1( void )
 		STOP_ENCO_COUNT;
 		Line_Trace_PD_slow( Photo_2, Photo_3 );
 	}
-	
+	/*
 	if(	Feed_flag == PHOTO_BACK){
 		
 		STOP_ENCO_COUNT;
 		Line_Trace_PD_BACK( Photo_2, Photo_3 );
-	}
+	}*/
 
 	// ----------------
 	// --- 静止状態 ---
@@ -507,9 +509,9 @@ make_traj( float t_i, float t_f )
 	}
 }
 
-// ----------------------------------
-// --- traj_trackingによる並進移動 ---
-// ----------------------------------
+// ---------------------------------------
+// --- traj_trackingによる並進移動(cm) ---
+// ---------------------------------------
 static void
 translate(float distance)
 {
@@ -995,7 +997,7 @@ void Line_Trace_PD( int sensor_2, int sensor_3 )
 	motor( L_power*LD , MOTOR_L );
 	motor( R_power*RD , MOTOR_R );
 }
-
+/*
 //後退しながらライントレース2025/0609
 void Line_Trace_PD_BACK( int sensor_2, int sensor_3 )
 {
@@ -1063,8 +1065,7 @@ void Line_Trace_PD_BACK( int sensor_2, int sensor_3 )
 
 	motor( -L_power*LD , MOTOR_L );
 	motor( -R_power*RD , MOTOR_R );
-}
-//
+}*/
 
 
 // -------------------------------
@@ -1194,11 +1195,10 @@ void Line_Trace( int lap )
 	}
 	Feed_flag = STOP2;
 }
-
+/*
 // ---------------------------------
 // --- ライントレース一連 (後退) ---
 // ---------------------------------
-
 void Line_Trace_BACK( int lap )
 {
 	int lap_flag;
@@ -1219,7 +1219,7 @@ void Line_Trace_BACK( int lap )
 		All_black_flag = 0;
 	}
 	Feed_flag = STOP2;
-}
+}*/
 
 // ---------------------------------
 // --- ライントレース一連 (Slow) ---
@@ -1264,6 +1264,9 @@ void sleep( int sleep_time )
 // --------------
 void Go2Pet( void )
 {	
+	rflush();
+	rprintln("p1");
+	
 	while(ULTRA_SONIC){
 		Feed_flag = PHOTO_SLOW; // ペットボトルのときだけゆっくりにする
 	}
@@ -1282,12 +1285,12 @@ void Go2Pet( void )
 
 	sleep( 250 ); //300
 	ARM_MIDDLE;
+	
+	rflush();
+	rprintln("p2");
 
 	sleep( 250 ); //300
-	//ARM_PUT;
-
-
-	//sleep( 400 );
+	
 }
 
 // -----------------------------------------------------------
@@ -1352,11 +1355,14 @@ void Collect(void)
 	//int max_search_back = 5;
 	int max_search_back = 3;
 	float offset_search = 9.0f;
+	
+	// 面舵いっぱーい！
+	rflush();
+	rprintln("o");
 
 	//右前の探索開始位置に移動
-	//traj_tracking(30.0f, 0.0f, 2.0f);
-	translate(RIGHT_SEARCH_START_POS - ADJUSTMENT_SEARCH_START_POS); 
-	traj_tracking(ADJUSTMENT_SEARCH_START_POS *2 * PI / 4, -90.0f-2.0f, 2.0f);
+	translate(RIGHT_SEARCH_START_POS - ADJUSTMENT_SEARCH_START_POS +1.0f); //+1.0f追加
+	traj_tracking(ADJUSTMENT_SEARCH_START_POS *2 * PI / 4, -90.0f, 2.0f);
 	//translate(RIGHT_SEARCH_START_POS);
 	//rotate(-90.0f);
 	//translate(ADJUSTMENT_SEARCH_START_POS);
@@ -1366,8 +1372,14 @@ void Collect(void)
 	/// 右前の回収処理 ///
 	//////////////////////
 	for(step = 0; step < max_search_front; step++){
-	// Collect関数内の各オブジェクト検出後の動作判断部分に追加
-	// 例：
+		if(step == 5){
+			//ステップ数送信
+			rprint("right12:");
+			rprintln(int16_t(step));
+			rflush();
+			rprintln("v");
+		}
+		// Collect関数内の各オブジェクト検出後の動作判断部分に追加
 		if (goal_flag == 0 && step != 6 ) {
 			obj1 = search_oneball_or_zeitaku();
 		} 
@@ -1380,8 +1392,7 @@ void Collect(void)
 		else if ( goal_flag == 1 && step == 6 ){
 			obj2 = search_zeitaku();
 		}
-		rprint("right12:");
-		rprint(int16_t(step));
+		
 		if (goal_flag == 0){
 			if (obj1.type != RedBall && obj1.type != BlueBall && obj1.type != Zeitaku){
     		//何もないとき or 認識不可
@@ -1452,27 +1463,10 @@ void Collect(void)
 		    // ゴールに向かう処理
 		    //ライントレース出来るところまで移動
 			
-		    translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS +2.0f); // -1.0f削除
-		    rotate(-90.0f);
+		    translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS +1.2f); // -1.0f削除 2.0→1.5
+		    rotate(-92.0f);
 		    //ライントレースで一本目のところまで行く
 		    return_to_line();
-/*			
-			switch(obj2.type){
-				case RedBall:
-				case BlueBall:
-				case Goal:
-					//ライントレース出来るところまで移動
-					translate( offset_search * step + ADJUSTMENT_SEARCH_START_POS); // -1.0fを削除
-					rotate(90.0f);
-					return_to_line();
-					break;
-				case Zeitaku:
-					//ライントレース出来るところまで移動
-					translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS); // -1.0fを削除
-					rotate(-90.0f);
-					return_to_line();
-					break;
-		    }*/
 		}
 		//排出して元に戻る
 		switch(obj1.type){
@@ -1492,7 +1486,7 @@ void Collect(void)
 			translate(offset_search * step + ADJUSTMENT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
 		}else{
 			translate(RIGHT_SEARCH_START_POS - (offset_search * step + ADJUSTMENT_SEARCH_START_POS));
-			traj_tracking( (offset_search * step + ADJUSTMENT_SEARCH_START_POS) * 2 * PI / 4, -91.0f, 3.0f);
+			traj_tracking( (offset_search * step + ADJUSTMENT_SEARCH_START_POS) * 2 * PI / 4, -90.0f, 3.0f);
 			//rotate(-90.0f);
 			//translate(offset_search * step + ADJUSTMENT_SEARCH_START_POS);
 		}
@@ -1500,6 +1494,10 @@ void Collect(void)
 		goal_flag = 0;
 		step -= 1;
 	}
+	
+	// 船が揺れるぞ！しっかりつかまれ！
+	rflush();
+	rprintln("h");
 
 	//右前探索開始位置から左前探索開始位置へ移動
 	translate(- offset_search * max_search_front - ADJUSTMENT_SEARCH_START_POS + (LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS));
@@ -1514,7 +1512,14 @@ void Collect(void)
 	/// 左前の回収処理 ///
 	//////////////////////
 	for(step = 0; step < max_search_front; step++){
-	// Collect関数内の各オブジェクト検出後の動作判断部分に追加
+		if(step == 5){
+			//ステップ数送信
+			rprint("right12:");
+			rprintln(int16_t(step));
+			rflush();
+			rprintln("v");
+		}
+		// Collect関数内の各オブジェクト検出後の動作判断部分に追加
 		if (goal_flag == 0 && step != 6) {
 			obj1 = search_oneball_or_zeitaku();
 		} 
@@ -1528,9 +1533,11 @@ void Collect(void)
 			obj2 = search_zeitaku();
 		}
 		
-		
+		//ステップ数送信
 		rprint("left12:");
-		rprint(int16_t(step));
+		rflush();
+		rprintln(int16_t(step));
+
 		if (goal_flag == 0){
 			if (obj1.type != RedBall && obj1.type != BlueBall && obj1.type != Zeitaku){
 	    	//何もないとき or 認識不可
@@ -1604,8 +1611,8 @@ void Collect(void)
 			}
 		    // ゴールに向かう処理
 		    //ライントレース出来るところまで移動
-		    translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS +1.0f); // -1.0f削除
-		    rotate(-90.0f);
+		    translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS); // +1.0f削除
+		    rotate(-92.0f);
 			translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
 		    //ライントレースで一本目のところまで行く
 		    return_to_line();
@@ -1625,7 +1632,7 @@ void Collect(void)
 		}
 		//探索していた位置に移動
 		translate(LEFT_SEARCH_START_POS - (offset_search * step + ADJUSTMENT_SEARCH_START_POS));
-		traj_tracking( (offset_search * step + ADJUSTMENT_SEARCH_START_POS -3.0f) * 2 * PI / 4, -92.0f, 3.0f);
+		traj_tracking( (offset_search * step + ADJUSTMENT_SEARCH_START_POS -3.0f) * 2 * PI / 4, -90.0f, 3.0f);
 		//rotate(-90.0f);
 		//translate(offset_search * step + ADJUSTMENT_SEARCH_START_POS);
 		//このループをもう一度
@@ -1638,7 +1645,7 @@ void Collect(void)
 		// ゴールに向かう処理
 		//ライントレース出来るところまで移動
 		translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS +2.0f); // -1.0f削除
-	    rotate(-90.0f);
+	    rotate(-92.0f);
 		translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
 	    //ライントレースで一本目のところまで行く
 	    return_to_line();
@@ -1671,8 +1678,6 @@ void Collect(void)
 		translate(5.0f);
 		rotate(90.0f);
 	}
-
-
 	//////////////////////////////
 	///ペットボトルの回収処理  ///
 	//////////////////////////////
@@ -1707,6 +1712,11 @@ void Collect(void)
 	sleep( 150 ); //200
 	POMP_OFF;
 	sleep( 150 ); //200
+	
+	// またね！元気でな！
+	rflush();
+	rprintln("p3");
+	
 	ARM_MIDDLE;
 	sleep( 300 );
 
@@ -1777,7 +1787,7 @@ void Collect(void)
 		//traj_tracking( (offset_search * step + SECTION_HEIGHT * 2 -3.0f) * 2 * PI / 4, -92.0f, 5.0f);
 		//translate( ADJUSTMENT_SEARCH_START_POS);
 		rotate(-90.0f);
-		translate(ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2); //-2.0f削除
+		translate(ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2 -2.0f); //-2.0f削除
 		//このループを抜ける
 		break;
 	}
@@ -1827,7 +1837,7 @@ void Collect(void)
 				break;
 		}
 		//探索していた位置に移動
-		translate(RIGHT_SEARCH_START_POS);
+		translate(RIGHT_SEARCH_START_POS+1.0f);// +1.0f
 		//traj_tracking( (offset_search * step + SECTION_HEIGHT * 2 -3.0f) * 2 * PI / 4, -92.0f, 5.0f);
 		//translate( ADJUSTMENT_SEARCH_START_POS);
 		rotate(-90.0f);
@@ -1839,9 +1849,9 @@ void Collect(void)
 	//////////////////////
 	/// 右4枠の回収処理 ///
 	//////////////////////
-	int step = 0;
+	// int step = 0;
 	goal_flag = 0;
-	for(int step = 0; step < max_search_back; step++){
+	for(step = 0; step < max_search_back; step++){
 		if (goal_flag == 0){
 			obj1 = search_oneball_or_zeitaku();
 		}
@@ -1872,8 +1882,8 @@ void Collect(void)
 	    // ここに追加の処理（必要に応じて）
 		//右探索開始位置から左探索開始位置へ移動
 		traj_tracking( -offset_search * step * 2 * PI / 4, -90.0f, 3.0f);
-		translate(-(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS)+offset_search * step);
-	
+		translate(-(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS)+offset_search * step+2.0f); //+1.0f追加
+
 		//rotate(90.0f);
 		//translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
 		rotate(90.0f);
@@ -1888,7 +1898,7 @@ void Collect(void)
 	    // ここに追加の処理（必要に応じて）
 		//右探索開始位置から左探索開始位置へ移動
 		traj_tracking( -offset_search * step * 2 * PI / 4, -90.0f, 3.0f);
-		translate(-(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS)+offset_search * step);
+		translate(-(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS)+offset_search * step+1.5f);
 	
 		//rotate(90.0f);
 		//translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
@@ -1902,7 +1912,11 @@ void Collect(void)
 		if (goal_flag == 0) {
 			obj1 = search_oneball_or_zeitaku();
 		}else if(goal_flag == 1){
-			obj2 = search_oneball_or_zeitaku();
+			if(obj1.type == RedBall || obj1.type == BlueBall){
+				obj2 = search_zeitaku();
+			}else{
+				obj2 = search_oneball_or_zeitaku();
+			}
 		} 
 		rprint("left4:");
 		rprint(int16_t(step));
@@ -1952,9 +1966,8 @@ void Collect(void)
 					break;
 			}
 		    //ライントレース出来るところまで移動
-			//rotate(-180.0f);
-		    translate( - offset_search * step - SECTION_HEIGHT * 3 - ADJUSTMENT_SEARCH_START_POS + 4.0f); // -1.0f削除
-		    rotate(-90.0f);
+		    translate( - offset_search * step - SECTION_HEIGHT * 3 - ADJUSTMENT_SEARCH_START_POS + 4.0f); // + 4.0f追加
+		    rotate(-92.0f);
 			translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
 		    //ライントレースで一本目のところまで行く
 		    return_to_line();
@@ -1971,181 +1984,31 @@ void Collect(void)
 				emit_zeitaku_last(obj2);
 				break;
 		}
-	}
-/*
-	//////////////////////
-	/// 右奥の回収処理 ///
-	//////////////////////
-	for(int step = 0; step < max_search_back+1; step++){
-		Object obj;
-		if(step < 3) obj = search_maxcoffee_or_pyramid(); //4回目まではマックス缶とピラミッドを探す
-		else obj = search_oneball_or_zeitaku();           //4回目以降はボールと贅沢微糖を探す
-
-		if (obj.type == None){
-			//何もないとき
-			//最後以外は，前方に少し進める
-			translate(offset_search);
-			continue;
-		}
-		//今いる位置からつかんで戻る
-		switch(obj.type){
-			case RedBall:
-			case BlueBall:
-				catch_ball(obj.distance, obj.angle);
-				//ライントレース出来るところまで移動
-				translate( offset_search * step + ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2 ); // -1.0fを削除
-				rotate(90.0f);
-				break;
-			case Zeitaku:
-				catch_zeitaku(obj.distance, obj.angle);
-				//ライントレース出来るところまで移動
-				translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS - SECTION_HEIGHT * 2 ); // -1.0fを削除
-				rotate(-90.0f);
-				break;
-			case Pyramid:
-				catch_pyramid(obj.distance, obj.angle);
-				//ライントレース出来るところまで移動
-				translate( offset_search * step + ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2 + 1.0f); // -1.0fを削除,+ 1.0f追加
-				rotate(90.0f);
-				break;
-			case MaxCoffee:
-				catch_maxcoffee(obj.distance, obj.angle);
-				//ライントレース出来るところまで移動
-				translate( offset_search * step + ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2 + 1.0f); // -1.0fを削除
-				rotate(90.0f);
-				break;
-		}
-		//ライントレース出来るところまで移動
-		//translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS - SECTION_HEIGHT * 2 ); // -1.0fを削除
-		//rotate(-90.0f);
-		//ライントレースで一本目のところまで行く
-		return_to_line();
-		//排出して元に戻る
-		switch(obj.type){
-			case RedBall:
-			case Pyramid:
-				emit_redball(obj);
-				break;
-			case BlueBall:
-				emit_blueball(obj);
-				break;
-			case Zeitaku:
-				emit_zeitaku(obj);
-				break;
-			case MaxCoffee:
-				emit_maxcoffee();
-				break;
-		}
-		//探索していた位置に移動
-		translate(RIGHT_SEARCH_START_POS);
-		//traj_tracking( (offset_search * step + SECTION_HEIGHT * 2 -3.0f) * 2 * PI / 4, -92.0f, 5.0f);
-		//translate( ADJUSTMENT_SEARCH_START_POS);
-		rotate(-90.0f);
-		translate(offset_search * step + ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2);
-		//このループをもう一度
-		step -= 1;
+	break;
 	}
 	
-	//右奥探索開始位置から左奥探索開始位置へ移動
-	translate(-offset_search * max_search_back - ADJUSTMENT_SEARCH_START_POS + (LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS));
-	traj_tracking( -(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS) * 2 * PI / 4, -90.0f, 3.0f);
-	//rotate(90.0f);
-	//translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
-	rotate(90.0f);
-	translate(ADJUSTMENT_SEARCH_START_POS);
-
-	//////////////////////
-	/// 左奥の回収処理 ///
-	//////////////////////
-	for(int step = 0; step < max_search_back; step++){
-		Object obj = search_oneball_or_zeitaku();
-		if(step < 4) obj = search_maxcoffee_or_pyramid(); //4回目まではマックス缶とピラミッドを探す
-		else obj = search_oneball_or_zeitaku();           //4回目以降はボールと贅沢微糖を探す
-
-		if (obj.type == None){
-			//何もないとき
-			//最後以外は，前方に少し進める
-			translate(offset_search);
-			continue;
-		}
-		//今いる位置からつかんで戻る
-		switch(obj.type){
-			case RedBall:
-			case BlueBall:
-				catch_ball(obj.distance, obj.angle);
-				//ライントレース出来るところまで移動
-				translate( offset_search * step + ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2 ); // -1.0fを削除
-				rotate(90.0f);
-				break;
-			case Zeitaku:
-				catch_zeitaku(obj.distance, obj.angle);
-				//ライントレース出来るところまで移動
-				translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS - SECTION_HEIGHT * 2 ); // -1.0fを削除
-				rotate(-90.0f);
-				break;
-			case Pyramid:
-				catch_pyramid(obj.distance, obj.angle);
-				//ライントレース出来るところまで移動
-				translate( offset_search * step + ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2 + 1.0f); // -1.0fを削除
-				rotate(90.0f);
-				break;
-			case MaxCoffee:
-				catch_maxcoffee(obj.distance, obj.angle);
-				//ライントレース出来るところまで移動
-				translate( offset_search * step + ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2 + 1.0f); // -1.0fを削除
-				rotate(90.0f);
-				break;
-		}
+	if(obj2.type==None){
 		//ライントレース出来るところまで移動
-		//translate(- offset_search * step - ADJUSTMENT_SEARCH_START_POS - SECTION_HEIGHT * 2 ); // -1.0fを削除
-		//rotate(-90.0f);
+	    translate( - offset_search * max_search_back - SECTION_HEIGHT * 3 - ADJUSTMENT_SEARCH_START_POS + 4.0f); // -1.0f削除
+	    rotate(-92.0f);
 		translate(LEFT_SEARCH_START_POS - RIGHT_SEARCH_START_POS);
-		//ライントレースで一本目のところまで行く
-		return_to_line();
-		//排出して元に戻る
-		switch(obj.type){
+	    //ライントレースで一本目のところまで行く
+	    return_to_line();
+		//排出してリターンボーナス
+		switch(obj1.type){
 			case RedBall:
-			case Pyramid:
-				emit_redball(obj);
+				emit_redball_last(obj2);
 				break;
 			case BlueBall:
-				emit_blueball(obj);
+				emit_blueball_last(obj2);
 				break;
 			case Zeitaku:
-				emit_zeitaku(obj);
-				break;
-			case MaxCoffee:
-				emit_maxcoffee();
+				emit_zeitaku_last(obj2);
 				break;
 		}
-		//探索していた位置に移動
-		translate(LEFT_SEARCH_START_POS - (offset_search * step + ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2));
-		traj_tracking((offset_search * step + ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2 -3.0f) * 2 * PI / 4, -92.0f, 6.0f);
-		//rotate(-90.0f);
-		//translate(offset_search * step + ADJUSTMENT_SEARCH_START_POS + SECTION_HEIGHT * 2);
-		//このループをもう一度
-		step -= 1;
 	}
-
-	//青ゴール前の線まで戻る
-	translate(-20.0f);
-	rotate(-90.0f);
-	//ラインに当たるまで直進
-	while(1){
-		motor( 180*LD , MOTOR_L ); //150
-		motor( 180*RD , MOTOR_R );
-		if(Photo_RR == BLACK && Photo_RL == BLACK){
-			break;
-		}
-	}
-	translate(5.0f);
-	rotate(-90.0f);
-
-	void return_to_line();
-	Line_Trace(4); //1
-
-	//ここが終わる時点で青ゴールの方を向いて止まっているはず。
-	*/
+	rflush();
+	rprintln("f");
 }
 
 // ----------------------------------
@@ -2284,7 +2147,7 @@ void return_to_line(void){
 	//ラインを見つけてから最初の線まで移動する
 	Line_Trace( 1 );
 }
-
+/*
 void return_to_line_back(void){
 	if( Photo_2 <= 700 && Photo_3 <= 700 ){
 		while( Photo_2 < 700 && Photo_3 < 700 ){
@@ -2294,7 +2157,7 @@ void return_to_line_back(void){
 	}
 	//ラインを見つけてから最初の線まで移動する
 	Line_Trace_BACK( 1 );
-}
+}*/
 
 // ------------------
 // --- PSD_sensor ---
@@ -2431,6 +2294,8 @@ void main(void)
 			
 			ARM_MIDDLE;
 			sleep( 1000 );
+			search_maxcoffee_or_pyramid();
+			
 			while(1){
 			}
 
@@ -2461,8 +2326,10 @@ void main(void)
 		//sleep( 1000 );
 		//while(1){
 		if( black == 0 ){
-			//ARM_MIDDLE;
 			
+			
+			//ARM_MIDDLE;
+			/*
 			sleep( 500 );
 			
 			rprintln("Pressed Black-switch");
@@ -2473,9 +2340,9 @@ void main(void)
 			//磁石でキャッチ
 			translate(-obj1.distance);
 			rotate(-obj1.angle);
-
-		}
-		/*	
+*/
+		
+		
 			//ピラミッドチェック用
 			while (1){
 				HUG_PYRAMID_UP;
@@ -2530,7 +2397,7 @@ void main(void)
 			translate(-20);
 			*/
 
-		//}
+		}
 	}
 }
 
@@ -2539,11 +2406,9 @@ void main(void)
 // --------------------------------------------
 void transform_robot( void ){
 	
-	translate( 55.0f ); //55cm前進
+	translate( 55.0f );
 	
 	OPEN_UP;
-
-	//sleep( 200 );
 
 	ARM_MIDDLE;
 
@@ -2744,14 +2609,15 @@ Object search_oneball_or_zeitaku(void){
 	int size = read_Line();  //結果を読み込み
 
 	//得られた文字列を分割
-	char *mode, *frst, *scnd, *thrd, *type, *goal;
+	char *mode, *frst, *scnd, *thrd, *type, *goal, *dble;
 
 	mode = strtok(input_buffer,",");
 	frst = strtok(NULL,","); //距離
 	scnd = strtok(NULL,","); //角度
 	thrd = strtok(NULL,","); //時間（3）
 	type = strtok(NULL,","); //r, b. z. m, p, g：２種類同じものを検出し，１つだけをもってゴールへ
-	goal = strtok(NULL,","); //goal_flag = 1ならゴールへ向かう
+	goal = strtok(NULL,","); //goal_flag = 1なら2つ目の対象物を取ってゴールへ向かう
+	dble = strtok(NULL,",");//2個対象物を同時に見つけdoubleget_flag =1の時
 	
 	
 	if(mode[0] == 'n'){
@@ -2761,12 +2627,17 @@ Object search_oneball_or_zeitaku(void){
 	}
 
 	//結果をdouble型に変換
-	double x1, x2, x3, cal_dis, cal_deg;
+	double x1, x2, x3;
 	x1 = atof(frst);  // [mm]
 	x2 = atof(scnd);  // [deg]
 	x3 = atof(thrd);  // [s] 使っていない
 	
 	int goal_flag = atoi(goal);
+	
+	int dble_flag = atoi(dble);
+	
+	rprintln("dble_flag");
+	rprintln(int16_t(dble_flag));
 		
 	//車体からの相対位置の算出
 	float cal_distance = calculate_distance_from_steer_center(x1, x2);
@@ -2799,23 +2670,23 @@ Object search_oneball_or_zeitaku(void){
 }
 
 Object search_zeitaku(void){
-		//Raspiへのシリアル通信
-	//ボールと贅沢微糖の画像認識を実行する
+	//Raspiへのシリアル通信
+	//贅沢微糖のみの画像認識を実行する
 	rflush();
 	rprintln("c");
 	int size = read_Line();  //結果を読み込み
 
 	//得られた文字列を分割
-	char *mode, *frst, *scnd, *thrd, *type, *goal;
+	char *mode, *frst, *scnd, *thrd, *type, *goal, *dble;
 
 	mode = strtok(input_buffer,",");
 	frst = strtok(NULL,","); //距離
 	scnd = strtok(NULL,","); //角度
 	thrd = strtok(NULL,","); //時間（3）
 	type = strtok(NULL,","); //r, b. z. m, p, g：２種類同じものを検出し，１つだけをもってゴールへ
-	goal = strtok(NULL,","); //goal_flag = 1ならゴールへ向かう
-	
-	
+	goal = strtok(NULL,","); //goal_flag = 1なら2つ目の対象物を取ってゴールへ向かう
+	dble = strtok(NULL,",");//2個対象物を同時に見つけdoubleget_flag =1の時
+		
 	if(mode[0] == 'n'){
 		//物体を見つけられなかった場合
 		Object obj = {None, 0.0f, 0.0f};
@@ -2823,12 +2694,14 @@ Object search_zeitaku(void){
 	}
 
 	//結果をdouble型に変換
-	double x1, x2, x3, cal_dis, cal_deg;
+	double x1, x2, x3;
 	x1 = atof(frst);  // [mm]
 	x2 = atof(scnd);  // [deg]
 	x3 = atof(thrd);  // [s] 使っていない
 	
 	int goal_flag = atoi(goal);
+	
+	int dble_flag = atoi(dble);
 		
 	//車体からの相対位置の算出
 	float cal_distance = calculate_distance_from_steer_center(x1, x2);
@@ -3248,9 +3121,10 @@ void emit_redball_last(Object obj2){
 	sleep( 150 ); //200
 	//戻る
 	translate(20.0f);
-	rotate(90.0f);
+	
 	
 	if(obj2.type == Zeitaku){
+		rotate(90.0f);
 		translate(10.0f);
 		Line_Trace( 1 );
 			
@@ -3265,19 +3139,19 @@ void emit_redball_last(Object obj2){
 		rotate(90.0f);
 		translate(10.0f);
 		Line_Trace( 1 );
+		
 		//リターンボーナス
 		HUG_START_POSI;
 		ARM_LOW;
-		//ARM_PUT;
 		sleep( 200 );
 		traj_tracking( 26.0f, -11.3f, 1.0f );
 		traj_tracking( 26.0f, 11.3f, 3.0f );
 	}else {
-		rotate(180.0f);
+		rotate(-90.0f);
+		
 		//リターンボーナス
 		HUG_START_POSI;
 		ARM_LOW;
-		//ARM_PUT;
 		sleep( 200 );
 		traj_tracking( 26.0f, -11.3f, 1.0f );
 		traj_tracking( 26.0f, 11.3f, 3.0f );
@@ -3339,10 +3213,10 @@ void emit_blueball_last(Object obj2){
 		rotate(90.0f);
 		translate(10.0f);
 		Line_Trace( 1 );
+		
 		//リターンボーナス
 		HUG_START_POSI;
 		ARM_LOW;
-		//ARM_PUT;
 		sleep( 200 );
 		traj_tracking( 26.0f, -11.3f, 1.0f );
 		traj_tracking( 26.0f, 11.3f, 3.0f );
@@ -3351,10 +3225,10 @@ void emit_blueball_last(Object obj2){
 		rotate(-90.0f);
 		translate(10.0f);
 		Line_Trace( 2 );
+		
 		//リターンボーナス
 		HUG_START_POSI;
 		ARM_LOW;
-		//ARM_PUT;
 		sleep( 200 );
 		traj_tracking( 26.0f, -11.3f, 1.0f );
 		traj_tracking( 26.0f, 11.3f, 3.0f );
@@ -3424,10 +3298,10 @@ void emit_zeitaku_last(Object obj2){
 		
 		translate(20.0f);
 		rotate(-90.0f);			
+		
 		//リターンボーナス
 		HUG_START_POSI;
 		ARM_LOW;
-		//ARM_PUT;
 		sleep( 200 );
 		traj_tracking( 26.0f, -11.3f, 1.0f );
 		traj_tracking( 26.0f, 11.3f, 3.0f );
@@ -3443,10 +3317,10 @@ void emit_zeitaku_last(Object obj2){
 		rotate(-90.0f);
 		translate(10.0f);
 		Line_Trace( 2 );
+		
 		//リターンボーナス
 		HUG_START_POSI;
 		ARM_LOW;
-		//ARM_PUT;
 		sleep( 200 );
 		traj_tracking( 26.0f, -11.3f, 1.0f );
 		traj_tracking( 26.0f, 11.3f, 3.0f );	
@@ -3454,10 +3328,10 @@ void emit_zeitaku_last(Object obj2){
 		rotate(90.0f);
 		translate(10.0f);
 		Line_Trace( 1 );
+		
 		//リターンボーナス
 		HUG_START_POSI;
 		ARM_LOW;
-		//ARM_PUT;
 		sleep( 200 );
 		traj_tracking( 26.0f, -11.3f, 1.0f );
 		traj_tracking( 26.0f, 11.3f, 3.0f );
@@ -3629,31 +3503,28 @@ void object_catch( char shape ){
 }
 
 void catch_ball(float distance, float angle){
-	if(step >= 4){
+	if(step >= 4 && dble_flag == 0 ){
 		//後退して向きを変える
 		rotate(angle);
 		translate(-5.0f);
 		rotate(180.0f);
 	
-		//ブルドーザー
-		HUG_BULLDOZE;
-		sleep( 100 );
+		//ブルドーザー狭い版
+		HUG_BULL_NARROW;
+		sleep( 250 );
 		traj_tracking( -distance - 5.0f, 0.0f, 4.0f ); // 6.5f -4.0f
 
-		//HUG
 		//HUG_WAIT_DOWN;
 		//sleep( 300 );
 		HUG_CATCH;
 		sleep( 450 );
 		HUG_WAIT_UP;
 		traj_tracking( distance +0.0f, 0.0f, 3.0f );
-		//sleep( 200 );
 
 		//戻る
 		//translate(2.0f); //6.5f
 		rotate(-180.0f-angle);
-		//translate(5.0f);
-		//rotate(-angle);
+		
 	}else{
 		//後退して向きを変える
 		//rotate(angle);
@@ -3663,22 +3534,31 @@ void catch_ball(float distance, float angle){
 		//ブルドーザー
 		HUG_BULLDOZE;
 		sleep( 100 );
-		traj_tracking( -distance - 11.0f, 0.0f, 5.0f ); // 6.5f
+		if(distance<=15.0f){
+			traj_tracking( -distance - 10.0f, 0.0f, 5.0f ); // 6.5f
 
-		//HUG
-		//HUG_WAIT_DOWN;
-		//sleep( 300 );
-		HUG_CATCH;
-		sleep( 350 );
-		HUG_WAIT_UP;
-		traj_tracking( distance + 6.0f, 0.0f, 3.0f );
-		//sleep( 200 );
+			//HUG_WAIT_DOWN;
+			//sleep( 300 );
+			
+			HUG_CATCH;
+			sleep( 350 );
+			HUG_WAIT_UP;
+			traj_tracking( distance + 6.0f, 0.0f, 3.0f );
+			
+		}else{
+			traj_tracking( -distance - 12.0f, 0.0f, 5.0f ); // 6.5f
+
+			//HUG_WAIT_DOWN;
+			//sleep( 300 );
+			
+			HUG_CATCH;
+			sleep( 350 );
+			HUG_WAIT_UP;
+			traj_tracking( distance + 7.0f, 0.0f, 3.0f );
+		}
 
 		//戻る
-		//translate(2.0f); //6.5f
 		rotate(-180.0f);
-		//translate(5.0f);
-		//rotate(-angle);
 	}
 }
 
@@ -3690,8 +3570,20 @@ void catch_zeitaku(float distance, float angle){
 	//磁石でキャッチ
 	translate(-distance*0.9);
 	
-	/*
+	//UVG
+	ARM_LOW;
+	sleep( 200 ); //300
+	ARM_CATCH;
+	POMP_ON;
+	sleep( 200 ); //300
+	ARM_MIDDLE;
+	sleep( 200 );
+
+	//戻る
+	rotate(-angle);
 	
+	
+	/*
 	if(distance<=13.5f){
 		translate(distance); // -5.0f追加,-7.0
 		//磁石でキャッチ
@@ -3703,7 +3595,7 @@ void catch_zeitaku(float distance, float angle){
 	}
 	*/
 	/*
-		 if(distance<=10.0f){
+	if(distance<=10.0f){
 		translate(distance -2.0f); // -5.0f追加,-7.0
 		//磁石でキャッチ
 		translate(-distance +2.0f);
@@ -3745,18 +3637,6 @@ void catch_zeitaku(float distance, float angle){
 		translate(-distance +11.0f);
 	}
 */
-	//UVG
-	ARM_LOW;
-	sleep( 200 ); //300
-	ARM_CATCH;
-	POMP_ON;
-	sleep( 200 ); //300
-	ARM_MIDDLE;
-	sleep( 200 );
-
-	//戻る
-	//translate(-distance +5.0f); // +5.0f追加
-	rotate(-angle);
 }
 
 void catch_pyramid(float distance, float angle){
@@ -3789,21 +3669,11 @@ void catch_pyramid(float distance, float angle){
 	translate(-5.0f);
 	rotate(180.0f);
 	//translate(-distance ); // 5.0 // -1.0f
-
-	//HUG
-/*	HUG_PYRAMID_UP;
-	sleep( 300 );
-	HUG_PYRAMID_DOWN;
-	sleep( 300 );
-	HUG_CATCH;
-	sleep( 400 );
-	HUG_WAIT_UP;
-	sleep( 300 );*/
 	
 	HUG_PYRAMID_UP;
 	sleep( 200 );
 	
-	translate(-distance -4.0f);//1.5
+	translate(-distance -3.0f);//1.5
 	
 	HUG_PYRAMID_DOWN;
 	sleep( 300 );
@@ -3811,29 +3681,13 @@ void catch_pyramid(float distance, float angle){
 	HUG_CATCH;
 	translate(-9.0f);//8.0
 	sleep( 300 );
-	
-/*	rotate(30.0f);
-	sleep(200);
-	rotate(-.600f);
-	sleep(200);
-	rotate(30.0f);
-	sleep(200);*/
-	
 								
 	HUG_WAIT_UP;
 	sleep( 200 );
-				
-	//translate(8.0f);
-	//sleep(300);
-	
-	
 
 	//戻る
 	translate(distance+8.0f); // 5.0 // 2.0
-	rotate( -angle);
-	//translate(5.0f);
-	//rotate(-angle);
-	
+	rotate(-angle);
 	
 
 }
@@ -3843,29 +3697,25 @@ void catch_maxcoffee(float distance, float angle){
 	rotate(angle);
 	translate(-5.0f);
 	rotate(-180.0f);
-	translate(-distance - 2.0f); // 6.5f -2.0
+	translate(-distance - 3.0f); // 6.5f -2.0
 
-	//HUG_PYRAMID_UP;
-	//sleep( 100 );
 	HUG_PYRAMID_DOWN;
-	sleep( 150 ); //300
+	sleep( 200 ); //300
 	
 	HUG_CATCH;
 	translate(-5.0f);
-//	traj_tracking( -5.0f, 0.0f, 2.0f );
+	// traj_tracking( -5.0f, 0.0f, 2.0f );
 	sleep( 250 ); //200
 	
 	HUG_WAIT_UP;
 	sleep( 100 );
 	//戻る
-	translate(distance + 2.0f); //6.5f
+	translate(distance + 3.0f); //6.5f
 	
 	//sleep( 300 );
 
-	rotate( -angle);
-	//translate(5.0f);
-	//rotate(-angle);
-
+	rotate(-angle);
+	
 }
 
 #ifdef __cplusplus
